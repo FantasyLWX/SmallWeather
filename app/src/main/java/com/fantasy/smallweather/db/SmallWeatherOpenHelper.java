@@ -12,7 +12,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class SmallWeatherOpenHelper extends SQLiteOpenHelper {
 
     /** Area表的建表语句 */
-    public static final String CREATE_AREA = "create table Area {" +
+    public static final String CREATE_AREA = "create table Area (" +
             "id integer primary key autoincrement," +
             "area_name text," +
             "area_code text)";

@@ -72,7 +72,7 @@ public class SmallWeatherDB {
         return areaList;
     }
     /**
-     * 根据关键字或地区全称，从数据库获取匹配的地区
+     * 根据地区名，从数据库获取匹配的地区
      */
     public List<Area> loadAreasByKey(String key) {
         List<Area> areaList = new ArrayList<>();
