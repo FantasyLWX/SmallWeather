@@ -72,12 +72,12 @@ public class SmallWeatherDB {
         return areaList;
     }
     /**
-     * 根据地区名，从数据库获取匹配的地区
+     * 根据关键字，从数据库获取匹配的地区
      */
     public List<Area> loadAreasByKey(String key) {
         List<Area> areaList = new ArrayList<>();
         Cursor cursor = db.query("Area", null, "area_name like ?",
-                new String[]{key + "%"}, null, null, "area_code");
+                new String[]{"%" + key + "%"}, null, null, "area_code");
         if (cursor.moveToFirst()) {
             do {
                 Area area = new Area();
