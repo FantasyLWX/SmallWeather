@@ -2,7 +2,10 @@ package com.fantasy.smallweather.activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
@@ -34,11 +37,15 @@ public class ChooseAreaActivity extends Activity {
     private ListView listView;
     private ProgressDialog progressDialog;
     private SmallWeatherDB smallWeatherDB;
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
     private ArrayAdapter<String> adapter;
-    /** listView加载的数据列表，存储地区名 */
-    private List<String> areaNameList = new ArrayList<>();
+    /** 选中的地区 */
+    private Area areaSelected;
     /** 地区列表，存储地区对象 */
     private List<Area> areaList;
+    /** ListView加载的数据列表，存储地区名 */
+    private List<String> areaNameList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,17 +54,22 @@ public class ChooseAreaActivity extends Activity {
         searchView = (SearchView) findViewById(R.id.search_view);
         listView = (ListView) findViewById(R.id.list_view);
         smallWeatherDB = SmallWeatherDB.getInstance(this);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = sharedPreferences.edit();
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
                 areaNameList);
         listView.setAdapter(adapter);
-        listView.setTextFilterEnabled(true); // 设置listView启动过滤
+        listView.setTextFilterEnabled(true); // 设置ListView启动过滤
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Toast.makeText(ChooseAreaActivity.this, areaNameList.get(position),
-                        Toast.LENGTH_SHORT).show();
+                // areaList与areaNameList存储的地区是对应的，地区对象 → 地区名
+//                Toast.makeText(ChooseAreaActivity.this,
+//                        areaList.get(position).getAreaName(), Toast.LENGTH_SHORT).show();
+                areaSelected = areaList.get(position);
+                queryWeatherFromServer();
             }
         });
 
@@ -87,7 +99,6 @@ public class ChooseAreaActivity extends Activity {
 //                } else {
 //                    // 使用用户输入的内容对listView的列表项进行过滤
 //                    adapter.getFilter().filter(newText);
-//
 //                    //listView.setFilterText(newText); // 输入后，会弹出Toast
 //                }
                 return true;
@@ -108,13 +119,13 @@ public class ChooseAreaActivity extends Activity {
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
         } else {
-            queryFromServer();
+            queryAreaFromServer();
         }
     }
     /**
-     * 根据传入的代号和类型从服务器上查询地区信息
+     * 从服务器上查询全中国所有地区的信息
      */
-    private void queryFromServer() {
+    private void queryAreaFromServer() {
         String address = "https://api.heweather.com/x3/citylist?search=allchina&key=" +
                 WEATHER_KEY;
         showProgressDialog();
@@ -128,6 +139,16 @@ public class ChooseAreaActivity extends Activity {
                         public void run() {
                             closeProgressDialog();
                             queryAreas();
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            closeProgressDialog();
+                            Toast.makeText(ChooseAreaActivity.this,
+                                    "成功连接服务器，但获取数据失败",
+                                    Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -146,6 +167,55 @@ public class ChooseAreaActivity extends Activity {
             }
         });
 
+    }
+    /**
+     * 在服务器上查询所选地区的天气信息
+     */
+    private void queryWeatherFromServer() {
+        String address = "https://api.heweather.com/x3/weather?cityid=" +
+                areaSelected.getAreaCode() + "&key=" + WEATHER_KEY;
+        showProgressDialog();
+        HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
+            @Override
+            public void onFinish(String response) {
+                if (Utility.handleWeatherResponse(editor, response)) {
+                    // 通过runOnUiThread()方法回到主线程处理逻辑
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            closeProgressDialog();
+                            Intent intent = new Intent(ChooseAreaActivity.this,
+                                    WeatherActivity.class);
+                            intent.putExtra("area_code", areaSelected.getAreaCode());
+                            startActivity(intent);
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            closeProgressDialog();
+                            Toast.makeText(ChooseAreaActivity.this,
+                                    "成功连接服务器，但获取数据失败",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+            @Override
+            public void onError(final Exception e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        e.printStackTrace();
+                        closeProgressDialog();
+                        Toast.makeText(ChooseAreaActivity.this,
+                                "加载\"" + areaSelected.getAreaName() + "\"的天气信息失败",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
     /**
      * 显示进度对话框
