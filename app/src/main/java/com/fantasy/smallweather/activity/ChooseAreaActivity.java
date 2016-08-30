@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -37,9 +38,9 @@ public class ChooseAreaActivity extends Activity {
     private ListView listView;
     private ProgressDialog progressDialog;
     private SmallWeatherDB smallWeatherDB;
-    private SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor editor;
     private ArrayAdapter<String> adapter;
+    /** 点击返回键的时间 */
+    private long exitTime = 0;
     /** 选中的地区 */
     private Area areaSelected;
     /** 地区列表，存储地区对象 */
@@ -54,8 +55,6 @@ public class ChooseAreaActivity extends Activity {
         searchView = (SearchView) findViewById(R.id.search_view);
         listView = (ListView) findViewById(R.id.list_view);
         smallWeatherDB = SmallWeatherDB.getInstance(this);
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        editor = sharedPreferences.edit();
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
                 areaNameList);
@@ -69,7 +68,11 @@ public class ChooseAreaActivity extends Activity {
 //                Toast.makeText(ChooseAreaActivity.this,
 //                        areaList.get(position).getAreaName(), Toast.LENGTH_SHORT).show();
                 areaSelected = areaList.get(position);
-                queryWeatherFromServer();
+                Intent intent = new Intent(ChooseAreaActivity.this,
+                        WeatherActivity.class);
+                intent.putExtra("area_code", areaList.get(position).getAreaCode());
+                startActivity(intent);
+                finish();
             }
         });
 
@@ -169,55 +172,6 @@ public class ChooseAreaActivity extends Activity {
 
     }
     /**
-     * 在服务器上查询所选地区的天气信息
-     */
-    private void queryWeatherFromServer() {
-        String address = "https://api.heweather.com/x3/weather?cityid=" +
-                areaSelected.getAreaCode() + "&key=" + WEATHER_KEY;
-        showProgressDialog();
-        HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
-            @Override
-            public void onFinish(String response) {
-                if (Utility.handleWeatherResponse(editor, response)) {
-                    // 通过runOnUiThread()方法回到主线程处理逻辑
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            closeProgressDialog();
-                            Intent intent = new Intent(ChooseAreaActivity.this,
-                                    WeatherActivity.class);
-                            intent.putExtra("area_code", areaSelected.getAreaCode());
-                            startActivity(intent);
-                        }
-                    });
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            closeProgressDialog();
-                            Toast.makeText(ChooseAreaActivity.this,
-                                    "成功连接服务器，但获取数据失败",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            }
-            @Override
-            public void onError(final Exception e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        e.printStackTrace();
-                        closeProgressDialog();
-                        Toast.makeText(ChooseAreaActivity.this,
-                                "加载\"" + areaSelected.getAreaName() + "\"的天气信息失败",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
-    }
-    /**
      * 显示进度对话框
      */
     private void showProgressDialog() {
@@ -236,5 +190,24 @@ public class ChooseAreaActivity extends Activity {
         if (progressDialog != null) {
             progressDialog.dismiss();
         }
+    }
+    /**
+     * 实现点击两次返回键，退出程序的功能
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK &&
+                event.getAction() == KeyEvent.ACTION_DOWN){
+            if((System.currentTimeMillis() - exitTime) > 2000){
+                Toast.makeText(getApplicationContext(), "再按一次退出程序",
+                        Toast.LENGTH_SHORT).show();
+                exitTime = System.currentTimeMillis();
+            } else {
+                finish();
+                System.exit(0);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

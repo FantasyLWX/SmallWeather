@@ -76,7 +76,7 @@ public class Utility {
                 JSONObject weatherInfoBasicUpdate = weatherInfoBasic
                         .getJSONObject("update");
                 // 然后再根据这个对象获取名称是loc的数据信息
-                editor.putString("update_time", weatherInfoBasicUpdate.getString("loc"));
+                editor.putString("publish_time", weatherInfoBasicUpdate.getString("loc"));
 
                 // 关于天气的所有信息都是在daily_forecast名称下面，
                 // 仔细查看，发现daily_forecast后面是[符号，说明，这也是一个JSON数组
@@ -120,7 +120,7 @@ public class Utility {
                 JSONObject weatherInfoNowForecast = weatherInfoDailyForecast
                         .getJSONObject(0);
                 // 你会发现，date是可以直接获取的，因为date后面是没有｛｝的
-                editor.putString("data_now", weatherInfoNowForecast.getString("date"));
+                editor.putString("current_date", weatherInfoNowForecast.getString("date"));
                 // tmp节点是当天的温度范围，包含最低和最高，说明这是一个JSONObject
                 JSONObject weatherInfoNowForecastTmp = weatherInfoNowForecast
                         .getJSONObject("tmp");
