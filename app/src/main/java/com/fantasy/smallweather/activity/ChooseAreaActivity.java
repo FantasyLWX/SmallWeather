@@ -1,13 +1,12 @@
 package com.fantasy.smallweather.activity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.view.KeyEvent;
+
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,6 +17,7 @@ import android.widget.Toast;
 import com.fantasy.smallweather.R;
 import com.fantasy.smallweather.db.SmallWeatherDB;
 import com.fantasy.smallweather.model.Area;
+import com.fantasy.smallweather.util.BaseActivity;
 import com.fantasy.smallweather.util.HttpCallbackListener;
 import com.fantasy.smallweather.util.HttpUtil;
 import com.fantasy.smallweather.util.Utility;
@@ -30,10 +30,11 @@ import java.util.List;
  * @author Fantasy
  * @version 1.0, 2016/8/24
  */
-public class ChooseAreaActivity extends Activity {
+public class ChooseAreaActivity extends BaseActivity {
 
     /** 我的和风天气的API的KEY */
     public static final String WEATHER_KEY = "2816d66ea029410683329d65253d3f8e";
+    private boolean isFromWeatherActivity;
     private SearchView searchView;
     private ListView listView;
     private ProgressDialog progressDialog;
@@ -52,6 +53,17 @@ public class ChooseAreaActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.choose_area_layout);
+
+        isFromWeatherActivity = getIntent().getBooleanExtra("from_weather_activity", false);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        // 已经选择了地区且不是从WeatherActivity跳转过来，才会直接跳转到WeatherActivity
+        if (prefs.getBoolean("area_selected", false) && !isFromWeatherActivity) {
+            Intent intent = new Intent(this, WeatherActivity.class);
+            intent.putExtra("area_code", prefs.getString("area_code", null));
+            startActivity(intent);
+            finish();
+        }
+
         searchView = (SearchView) findViewById(R.id.search_view);
         listView = (ListView) findViewById(R.id.list_view);
         smallWeatherDB = SmallWeatherDB.getInstance(this);
@@ -65,8 +77,6 @@ public class ChooseAreaActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 // areaList与areaNameList存储的地区是对应的，地区对象 → 地区名
-//                Toast.makeText(ChooseAreaActivity.this,
-//                        areaList.get(position).getAreaName(), Toast.LENGTH_SHORT).show();
                 areaSelected = areaList.get(position);
                 Intent intent = new Intent(ChooseAreaActivity.this,
                         WeatherActivity.class);
@@ -190,24 +200,5 @@ public class ChooseAreaActivity extends Activity {
         if (progressDialog != null) {
             progressDialog.dismiss();
         }
-    }
-    /**
-     * 实现点击两次返回键，退出程序的功能
-     */
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode == KeyEvent.KEYCODE_BACK &&
-                event.getAction() == KeyEvent.ACTION_DOWN){
-            if((System.currentTimeMillis() - exitTime) > 2000){
-                Toast.makeText(getApplicationContext(), "再按一次退出程序",
-                        Toast.LENGTH_SHORT).show();
-                exitTime = System.currentTimeMillis();
-            } else {
-                finish();
-                System.exit(0);
-            }
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
     }
 }

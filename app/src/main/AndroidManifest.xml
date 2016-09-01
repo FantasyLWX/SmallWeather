@@ -1,6 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.fantasy.smallweather">
 
+    <!--小天气 1.0 开始时间：2016/8/24 完成时间：2016/9/1-->
+    <!--放在某个Activity中，当进入到这个Activity中不会自动弹出软键盘
+    android:windowSoftInputMode="adjustUnspecified|stateHidden"-->
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -11,7 +15,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".activity.ChooseAreaActivity"
-            android:windowSoftInputMode="adjustUnspecified|stateHidden">
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -24,10 +24,12 @@
         android:id="@+id/search_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="-8dp"
         android:iconifiedByDefault="false"
         android:imeOptions="actionSearch"
         android:inputType="text"
-        android:queryHint="@string/query_hint">
+        android:queryHint="@string/query_hint"
+        android:focusable="false">
     </SearchView>
 
     <ListView

@@ -1,6 +1,5 @@
 package com.fantasy.smallweather.activity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,10 +9,13 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fantasy.smallweather.R;
+import com.fantasy.smallweather.util.ActivityCollector;
+import com.fantasy.smallweather.util.BaseActivity;
 import com.fantasy.smallweather.util.HttpCallbackListener;
 import com.fantasy.smallweather.util.HttpUtil;
 import com.fantasy.smallweather.util.Utility;
@@ -22,8 +24,9 @@ import com.fantasy.smallweather.util.Utility;
  * @author Fantasy
  * @version 1.0, 2016/8/29
  */
-public class WeatherActivity extends Activity implements View.OnClickListener {
+public class WeatherActivity extends BaseActivity implements View.OnClickListener {
 
+    private LinearLayout weatherInfoLayout;
     private Button buttonSwitchArea;
     private Button buttonRefreshWeather;
     private TextView areaName;
@@ -51,6 +54,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
         tmpMax = (TextView) findViewById(R.id.tmp_max);
         buttonSwitchArea = (Button) findViewById(R.id.switch_area);
         buttonRefreshWeather = (Button) findViewById(R.id.refresh_weather);
+        weatherInfoLayout = (LinearLayout) findViewById(R.id.weather_info_layout);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         editor = sharedPreferences.edit();
 
@@ -58,6 +62,8 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
         buttonRefreshWeather.setOnClickListener(this);
 
         String areaCode = getIntent().getStringExtra("area_code");
+        // 控件不可见，当控件visibility属性为INVISIBLE时，界面保留了view控件所占有的空间
+        weatherInfoLayout.setVisibility(View.INVISIBLE);
         queryWeatherFromServer(areaCode);
     }
 
@@ -68,7 +74,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
                 Intent intent = new Intent(this, ChooseAreaActivity.class);
                 intent.putExtra("from_weather_activity", true);
                 startActivity(intent);
-                finish();
+                //finish();
                 break;
             case R.id.refresh_weather:
                 SharedPreferences prefs = PreferenceManager
@@ -123,8 +129,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
                     public void run() {
                         e.printStackTrace();
                         closeProgressDialog();
-                        Toast.makeText(WeatherActivity.this,
-                                "加载\"" + areaName + "\"的天气信息失败",
+                        Toast.makeText(WeatherActivity.this, "加载天气信息失败",
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -135,19 +140,21 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
      * 从SharePreferences文件中读取存储的天气信息，并显示到界面上
      */
     private void showWeather() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        areaName.setText(prefs.getString("area_name", null));
-        publishTime.setText(prefs.getString("publish_time", null));
-        currentData.setText(prefs.getString("current_date", null));
-        tmpMin.setText(prefs.getString("tmp_min", null) + "℃");
-        tmpMax.setText(prefs.getString("tmp_max", null) + "℃");
+        areaName.setText(sharedPreferences.getString("area_name", null));
+        publishTime.setText(sharedPreferences.getString("publish_time", null));
+        currentData.setText(sharedPreferences.getString("current_date", null));
+        tmpMin.setText(sharedPreferences.getString("tmp_min", null) + "℃");
+        tmpMax.setText(sharedPreferences.getString("tmp_max", null) + "℃");
 
-        if (prefs.getString("txt_d", null).equals(prefs.getString("txt_n", null))) {
-            weatherDesp.setText(prefs.getString("txt_d", null));
+        if (sharedPreferences.getString("txt_d", null).equals
+                (sharedPreferences.getString("txt_n", null))) {
+            weatherDesp.setText(sharedPreferences.getString("txt_d", null));
         } else {
-            weatherDesp.setText(prefs.getString("txt_d", null) + " 转 " +
-                    prefs.getString("txt_n", null));
+            weatherDesp.setText(sharedPreferences.getString("txt_d", null) + "转" +
+                    sharedPreferences.getString("txt_n", null));
         }
+        // 控件不可见，当控件visibility属性为INVISIBLE时，界面保留了view控件所占有的空间
+        weatherInfoLayout.setVisibility(View.VISIBLE);
         //weatherInfoLayout.setVisibility(View.VISIBLE);
         //cityNameText.setVisibility(View.VISIBLE);
         //Intent intent = new Intent(this, AutoUpdateService.class);
@@ -185,7 +192,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
                         Toast.LENGTH_SHORT).show();
                 exitTime = System.currentTimeMillis();
             } else {
-                finish();
+                ActivityCollector.finishAll();
                 System.exit(0);
             }
             return true;

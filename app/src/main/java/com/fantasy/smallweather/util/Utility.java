@@ -48,6 +48,7 @@ public class Utility {
             SharedPreferences.Editor editor, String response) {
         if (!TextUtils.isEmpty(response)) {
             try {
+                editor.putBoolean("area_selected", true);
                 // 先把JSON数据加载成数组，因为根部HeWeather data service 3.0后面是[符号，
                 // 说明是以数组形式存放，只是这个数组里面只有一个元素
                 JSONArray jsonArray = new JSONObject(response)
