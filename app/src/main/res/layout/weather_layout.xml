@@ -2,25 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/colorPrimary" >
+        android:background="@color/colorPrimary">
 
         <!-- layout_marginLeft与layout_marginStart的区别
         	 参考博文：http://blog.csdn.net/zhufuing/article/details/40181815
           -->
-
-        <Button
-            android:id="@+id/switch_area"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="12dp"
-            android:layout_marginLeft="12dp"
-            android:background="@mipmap/home" />
 
         <TextView
             android:id="@+id/area_name"
@@ -32,8 +23,8 @@
 
         <Button
             android:id="@+id/refresh_weather"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
@@ -43,83 +34,173 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@color/weatherBackground" >
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/weatherBackground">
 
-        <TextView
-            android:id="@+id/publish_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginRight="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="10dp"
-            android:textColor="@color/white"
-            android:textSize="18sp" />
-
-        <LinearLayout
-            android:id="@+id/weather_info_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/current_data"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_gravity="center_horizontal"
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/weather_desp"
-                android:layout_width="wrap_content"
-                android:layout_height="60dp"
-                android:layout_gravity="center_horizontal"
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:textSize="40sp" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3">
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="60dp"
-                android:layout_gravity="center_horizontal"
-                android:orientation="horizontal" >
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_centerInParent="true">
 
                 <TextView
-                    android:id="@+id/tmp_min"
+                    android:id="@+id/now_tmp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="20dp"
+                    android:layout_gravity="center_horizontal"
                     android:textColor="@color/white"
-                    android:textSize="40sp" />
+                    android:textSize="100sp" />
 
-                <TextView
+                <GridLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:text="@string/tilde"
-                    android:textColor="@color/white"
-                    android:textSize="40sp" />
+                    android:columnCount="2">
 
-                <TextView
-                    android:id="@+id/tmp_max"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:textColor="@color/white"
-                    android:textSize="40sp" />
+                    <TextView
+                        android:id="@+id/now_fl"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:textColor="@color/white"
+                        android:textSize="15sp" />
 
+                    <TextView
+                        android:id="@+id/now_wind"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/now_hum"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:textColor="@color/white"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/now_aqi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="15sp" />
+
+                </GridLayout>
             </LinearLayout>
-        </LinearLayout>
-    </RelativeLayout>
+        </RelativeLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <GridLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_centerInParent="true"
+                android:columnCount="3">
+
+                <TextView
+                    android:id="@+id/data_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/data_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/data_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/weather_desp_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/weather_desp_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/weather_desp_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/tmp_range1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/tmp_range2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/tmp_range3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+            </GridLayout>
+        </RelativeLayout>
+    </LinearLayout>
 </LinearLayout>

@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -28,15 +29,16 @@ import java.util.List;
 /**
  * 选择地区
  * @author Fantasy
- * @version 1.0, 2016/8/24
+ * @version 1.1, 2016/09/02
  */
 public class ChooseAreaActivity extends BaseActivity {
 
     /** 我的和风天气的API的KEY */
     public static final String WEATHER_KEY = "2816d66ea029410683329d65253d3f8e";
-    private boolean isFromWeatherActivity;
+    private Button buttonBack;
     private SearchView searchView;
     private ListView listView;
+    private SharedPreferences prefs;
     private ProgressDialog progressDialog;
     private SmallWeatherDB smallWeatherDB;
     private ArrayAdapter<String> adapter;
@@ -54,19 +56,22 @@ public class ChooseAreaActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.choose_area_layout);
 
-        isFromWeatherActivity = getIntent().getBooleanExtra("from_weather_activity", false);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        // 已经选择了地区且不是从WeatherActivity跳转过来，才会直接跳转到WeatherActivity
-        if (prefs.getBoolean("area_selected", false) && !isFromWeatherActivity) {
-            Intent intent = new Intent(this, WeatherActivity.class);
-            intent.putExtra("area_code", prefs.getString("area_code", null));
-            startActivity(intent);
-            finish();
-        }
-
+        buttonBack = (Button) findViewById(R.id.back);
         searchView = (SearchView) findViewById(R.id.search_view);
         listView = (ListView) findViewById(R.id.list_view);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
         smallWeatherDB = SmallWeatherDB.getInstance(this);
+
+        // 安装好APP后，第一次打开“小天气”或还未曾选择地区，则“选择地区”页面不显示返回按钮
+        if (prefs.getString("area_code", null) == null) {
+            buttonBack.setVisibility(View.INVISIBLE);
+        }
+        buttonBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
                 areaNameList);
@@ -173,7 +178,7 @@ public class ChooseAreaActivity extends BaseActivity {
                     public void run() {
                         e.printStackTrace();
                         closeProgressDialog();
-                        Toast.makeText(ChooseAreaActivity.this, "加载失败",
+                        Toast.makeText(ChooseAreaActivity.this, "连接服务器失败",
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
