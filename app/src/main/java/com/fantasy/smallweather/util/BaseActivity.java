@@ -8,7 +8,7 @@ import android.os.Bundle;
  * @author Fantasy
  * @version 1.0, 2016/8/31
  */
-public class BaseActivity extends Activity{
+public class BaseActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

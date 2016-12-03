@@ -19,12 +19,12 @@ import com.fantasy.smallweather.util.HttpCallbackListener;
 import com.fantasy.smallweather.util.HttpUtil;
 import com.fantasy.smallweather.util.Utility;
 
-/**
- * @author Fantasy
- * @version 1.1, 2016/09/02
- */
-public class WeatherActivity extends BaseActivity implements View.OnClickListener {
 
+public class WeatherActivity extends BaseActivity implements View.OnClickListener {
+    /**
+     * @author Fantasy
+     * @version 1.1, 2016/09/02
+     */
     private Button buttonRefreshWeather;
     private TextView areaName;
     /** 当前温度 */

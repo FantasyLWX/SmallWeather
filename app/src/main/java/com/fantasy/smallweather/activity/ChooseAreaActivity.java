@@ -76,7 +76,6 @@ public class ChooseAreaActivity extends BaseActivity {
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
                 areaNameList);
         listView.setAdapter(adapter);
-        listView.setTextFilterEnabled(true); // 设置ListView启动过滤
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
